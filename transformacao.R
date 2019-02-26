@@ -9,7 +9,7 @@ library(readxl)
 library(xlsx)
 library(stringi)
 
-populacao <- fread("dados/populacao_municipios_2010X2017.csv")
+populacao <- fread("dados/populacao_municipios_2010X2017.csv") #verificar encoding
 populacao_nomes_colunas <- as.vector(populacao[1,])
 populacao <- populacao[-1,]
 colnames(populacao) <- as.character(populacao_nomes_colunas)
