@@ -3,13 +3,13 @@ library(foreign)
 
 df <- read.dbf('dados/larva-pulpa/2013.dbf')
 
-atividades <- read.dbf('ATIVIDADE658874_00.dbf')
+atividades <- read.dbf('tabelas-auxiliares/ATIVIDADE658874_00.dbf')
 
-produtos <- read.dbf('PRODUTO658876_00.dbf')
+produtos <- read.dbf('tabelas-auxiliares/PRODUTO658876_00.dbf')
 
 library(xlsx)
 
-armadilhas <- read.csv('dados/armadil/2013.csv')
+armadilhas <- read.csv('dados/armadilha/2013.csv')
 
 library(rjson)
 splitdf <- split(df,nrow(df))
@@ -92,7 +92,7 @@ mapping_create('sispncd',body=body)
 index_delete('sispncd')
 
 
-lavas_pupas <- read.csv('larva_pupa_consolidado.csv')
+lavas_pupas <- read.csv('dados/larva_pupa_consolidado.csv')
 names(lavas_pupas)
 
 lavas_pupas$lat_long<-paste(lavas_pupas$lat,',',lavas_pupas$lon)

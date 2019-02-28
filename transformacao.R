@@ -9,6 +9,8 @@ library(readxl)
 library(xlsx)
 library(stringi)
 
+source("CRISPDM.R")
+
 populacao <- fread("dados/populacao_municipios_2010X2017.csv") #verificar encoding
 populacao_nomes_colunas <- as.vector(populacao[1,])
 populacao <- populacao[-1,]
@@ -18,7 +20,7 @@ municipios_lat_lon <- fread("dados/lat_lon_municipios.csv")
 
 municipios_lat_lon$codIbge <- substr(municipios_lat_lon$codIbge, 1, 6)
 
-armadilhas2013 <- read_excel("dados/armadil/2013.xlsx") #Faltara unir todos os anos
+armadilhas2013 <- read_excel("dados/armadilha/2013.xlsx") #Faltara unir todos os anos
 larva_pulpa_2013 <- read.dbf("dados/larva-pulpa/2013.dbf") 
 larva_pulpa_2014 <- read.dbf("dados/larva-pulpa/2014.dbf") 
 larva_pulpa_2015 <- read.dbf("dados/larva-pulpa/2015.dbf") 
@@ -28,28 +30,33 @@ larva_pulpa_2016 <- read.xlsx("dados/larva-pulpa/2016.xlsx", sheetIndex = 1)
 larva_pulpa_consolidado <- larva_pulpa_2015
 
 #***
-#A tabela que devera ser escolhida como base, sera a maior dentre as tabelas consolidadas com todos os anos
-#***
-#Experimentando para quantidade atividade 1
+#Tratamento para larva-pulpa
 
-larva_pulpa_consolidadoModificado <- larva_pulpa_consolidado
-larva_pulpa_consolidadoModificado$CO_ATIVI[larva_pulpa_consolidado$CO_ATIVI != 1] <- 0
+consolidado <- NULL
+colunasChave <- c("NU_ANO", "NU_SEMAN", "CO_MUNIC")
 
-aux <- larva_pulpa_consolidadoModificado %>%
-            group_by(NU_ANO, NU_SEMAN, CO_MUNIC) %>%
-            summarise(QT_ATIV_3 = sum(CO_ATIVI, na.rm = TRUE))
-
-consolidado["QT_ATIV_1"] <- aux$QT_ATIV_3
-
-#***
-teste <-"QT_IT_CO"
-
-QT_ATIV_3 <- larva_pulpa_consolidadoModificado %>%
-  group_by(NU_ANO, NU_SEMAN, CO_MUNIC) %>%
-  summarise(QT_ATIV_3 = sum(QT_IT_PER, na.rm = TRUE))
-
-
-consolidado["QT_IT_PER"] <- QT_ATIV_3$QT_ATIV_3 #da pra fazer uma funcao
+for(i in 1:8) {
+  
+  if(i != 7) {
+    
+    #***
+    #Realizar rbind nas colunas de larva-pulpa
+    aux <- calculaQuantidade_fator_coluna_por_variaveis(tabela = larva_pulpa_2015, 
+                                                        coluna = "CO_ATIVI", 
+                                                        fator = i,
+                                                        colunasChave = colunasChave, 
+                                                        nome_nova_coluna = paste("QT_ATIV_", i, sep = ""))
+    
+    if(i == 1) {
+      consolidado <- aux
+    } else {
+      consolidado <- consolidado %>%
+                        inner_join(aux)
+    }
+    
+  }
+      
+}
 
 #***
 
