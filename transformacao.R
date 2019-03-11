@@ -58,6 +58,27 @@ for(i in 1:8) {
       
 }
 
+consolidado <- NULL
+for(i in unique(df$CO_PR_D1)) {
+  
+  
+  aux <- calcula_quantidade_fator_peso_variavelFatorPeso(tabela = df,
+                                                         colunaFator = "CO_PR_D1",
+                                                         colunaPeso = "QT_PR_D1",
+                                                         fator = i, 
+                                                         colunasChave = colunasChave,
+                                                         nome_nova_coluna = paste("QT_PR_D1_T", i, sep = ""))
+  
+  if(i == unique(df$CO_PR_D1)[1]) {
+    consolidado <- aux
+  } else {
+    
+    consolidado <- consolidado %>%
+                      inner_join(aux)
+  
+  }
+}
+
 #***
 
 aux <- larva_pulpa_consolidadoModificado %>%

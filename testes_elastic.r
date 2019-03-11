@@ -3,13 +3,14 @@ library(foreign)
 
 df <- read.dbf('dados/larva-pulpa/2013.dbf')
 
-atividades <- read.dbf('tabelas-auxiliares/ATIVIDADE658874_00.dbf')
+atividades <- read.dbf('dados/tabelas-auxiliares/ATIVIDADE658874_00.dbf')
 
-produtos <- read.dbf('tabelas-auxiliares/PRODUTO658876_00.dbf')
+produtos <- read.dbf('dados/tabelas-auxiliares/PRODUTO658876_00.dbf')
 
 library(xlsx)
+library(readxl)
 
-armadilhas <- read.csv('dados/armadilha/2013.csv')
+armadilhas <- read_excel('dados/armadilha/2013.xlsx')
 
 library(rjson)
 splitdf <- split(df,nrow(df))
@@ -17,13 +18,40 @@ splitdf <- split(df,nrow(df))
 library(jsonlite)
 jsondf <- toJSON(df)
 
-install.packages('elastic')
+#install.packages('elastic')
 library(elastic)
 
 es_data <- elastic("http://localhost:9200", "sispncd", "data")
 
 es_produto <- connect(es_host="localhost", es_port = "9200")
 connect()
+
+#***
+#Apenas um teste de criacao de indice para manipulacao posterior com aggregations (subindo apenas o que sera usado)
+
+teste_para_indiceLP <- df[,c(1,2,3,4,5, 7, 10)]
+
+connect()
+
+index_delete("aggs_atividades")
+index_create("aggs_atividades")
+
+docs_bulk(teste_para_indiceLP,index='aggs_atividades',type='atividades') #Realiza o envio com mapeamento automatico? 
+
+body_atividades <- strwrap(
+  '{"mappings": 
+  {"atividades": 
+   { "properties": { 
+      "CO_RESUM" : {"type" : "text"},
+      
+    }
+  }
+}')
+
+#***
+#FIM
+
+
 
 #es_produto %index% produtos
 
@@ -92,7 +120,7 @@ mapping_create('sispncd',body=body)
 index_delete('sispncd')
 
 
-lavas_pupas <- read.csv('dados/larva_pupa_consolidado.csv')
+lavas_pupas <- read.csv('dados/larva_pulpa_consolidado.csv')
 names(lavas_pupas)
 
 lavas_pupas$lat_long<-paste(lavas_pupas$lat,',',lavas_pupas$lon)
