@@ -5,16 +5,16 @@ library(jsonlite)
 
 dados_piloto_2018 <- jsonlite::stream_in(file("dados/dados-piloto-arbo-novembro-2018.json"), verbose=FALSE, pagesize=10000)
 
-#Pode ser uam visualizacao acerca dos tipos de deposito da regiao
+#Pode ser uma visualizacao acerca dos tipos de deposito da regiao
 #Pode ser um georeferenciamento entre equipes (poderia ateh ser utilizada a ideia da rede social se existissem os dados)
 
 
 library(foreign)
-source("gerenciamento_dados.R")
+source("CRISPDM.R")
 
-sinamDados <- read.dbf("dados/Consolidado 2013_2017.dbf")
+sinamDados <- read.dbf("dados/ubv/Consolidado 2013_2017.dbf")
 
-sinam_dados_a <- read.dbf("dados/Consolidado 2013_2017_a.dbf")
+sinam_dados_a <- read.dbf("dados/ubv/Consolidado 2013_2017_a.dbf")
 
 
 str(sinamDados)
