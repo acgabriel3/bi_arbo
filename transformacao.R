@@ -1,6 +1,12 @@
 #***
 #TRANSFORMACAO
 
+#***
+#Os fors abaixo podem ser substituidos pela seguinte abordagem: Construcao de um vetor ou hash 
+#com as colunas em que serao aplicadas as funcoes, e aplicacao de um for para percorrer esse vetor. 
+#Provavelmente o codigo seria reduzido em muitas linhas ao utilizar essa abordagem, no entanto iria
+#diminuir em parte a legibilidade, mas ficaria menos verborragico. 
+
 library(dplyr)
 library(data.table)
 library(foreign)
