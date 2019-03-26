@@ -190,6 +190,11 @@ periodo_2015 <- vetorPosicoes[consolidado$NU_ANO == 2015]
 
 consolidado$data[periodo_2013] <- inicio_periodo_2013
 
+#***
+#Executar etapas e verificar se comando abaixo substitui o loop, que esta extremamente lento
+
+consolidado$data[periodo_2013] <- (consolidado$data[periodo_2013] + (consolidado$NU_SEMAN[inicio_periodo_2013] * 7)) - 1
+
 for(i in periodo_2013) {
   
   consolidado$data[i] <- (consolidado$data[i] + (consolidado$NU_SEMAN[i] * 7)) - 1
