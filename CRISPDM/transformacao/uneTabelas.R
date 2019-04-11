@@ -1,6 +1,11 @@
+#CAMINHO
+#CRISPDM/transformacao/uneTabelas.R   
 
-
-uneTabelas <- function(nomeTabelas, formatoArquivos = NULL) {
+# - A funcao recebe: nomeTabelas = uma lista de strings, contendo o nome de todas as tabelas presentes na memória que deverao ser juntadas em uma soh
+# - A funcao pode receber: formatoArquivos = uma string comum a todos os nomes de tabelas que deseja-se unir , remover = se setado para TRUE a funcao ira remover
+#todas as tabelas que foram unificadas da memoria ram
+# - Retorna uma tabela com todas as tabelas que foram unificadas
+uneTabelas <- function(nomeTabelas, formatoArquivos = NULL, remover = FALSE) {
   
   '%UNE%' <- function(x, y) paste0(x,y)
   
@@ -13,6 +18,14 @@ uneTabelas <- function(nomeTabelas, formatoArquivos = NULL) {
   for(tabela in nomeTabelas) {
     
     resultado <- rbind( resultado, eval(as.symbol(tabela)) )
+    
+    if(remover) 
+      eval(parse( text = 
+                    "rm(" 
+                  %UNE% tabela 
+                  %UNE% ",envir=globalenv()" 
+                  %UNE% ")"
+      ))
                  
   }
   

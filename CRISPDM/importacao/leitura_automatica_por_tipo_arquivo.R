@@ -2,11 +2,10 @@
 #CAMINHO
 #CRISPDM/importacao/leitura_automatica_por_tipo_arquivo.R
 
-#O que deveria agora ser solucionado, eh a leitura dos arquivos por meio de uma nova list.files. O que poderia ser realizado eh a procura de um "formato" 
-#em meio ao nome do arquivo, para ler somente os arquivos necessarios. 
-
-#Terei de mudar para o diretorio e depois voltar para o diretorio, para resolver problemas de funcoes de leitura
-#nao tem como generalizar para todo caso, por isso deve-se escolher um verdadeiro lado
+# - A funcao recebe: O nome da funcao de leitura de qualquer pacote que serah utilizada para ler os arquivos
+# - A funcao pode receber: diretorioAlvo = o diretorio aonde se encontram os arquivos para leitura, formatoArquivo = o formato dos arquivos (.csv, .xml), o formato
+#padrao eh o xmlx
+# - A funcao cria uma variavel para cada arquivo lido noemada com o proprio nome do arquivo, e as mantem na memoria, a funcao retorna todos os nomes das variaveis criadas
 leitura_automatica_por_tipo_arquivo <- function(diretorioAlvo = NULL, formatoArquivo = NULL, funcao_de_leitura) {
   
   '%UNE%' <- function(x, y) paste(x,y)
