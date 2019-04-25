@@ -1,0 +1,15 @@
+*Anotações acerca do uso do docker e construção dos containers para ELK nesta máquina:
+
+tutorial para instalação do docker (ou desinstalação): https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04
+
+nome da rede usada em comum aos três containers: bi_arbo
+
+mudança manual para storage do docker para o path: media/gabriel/DATA/programas-U/docker
+tutorial seguido: https://linuxconfig.org/how-to-move-docker-s-default-var-lib-docker-to-another-directory-on-ubuntu-debian-linux
+
+imagens do ELK:
+
+elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+kibana: https://www.elastic.co/guide/en/kibana/current/docker.html
+logstash: docker pull docker.elastic.co/logstash/logstash:7.0.0 (tentar novamente, pois deu problema na última vez)
+
