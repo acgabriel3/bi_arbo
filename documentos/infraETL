@@ -4,12 +4,21 @@ tutorial para instalação do docker (ou desinstalação): https://phoenixnap.co
 
 nome da rede usada em comum aos três containers: bi_arbo
 
-mudança manual para storage do docker para o path: media/gabriel/DATA/programas-U/docker
-tutorial seguido: https://linuxconfig.org/how-to-move-docker-s-default-var-lib-docker-to-another-directory-on-ubuntu-debian-linux
+Alterando o local aonde o docker guarda arquivos para uma pasta específica em um HD ntfs: 
+
+	-Para resolver problemas com o ntfs sendo usado pelo docker como storage:
+	-https://github.com/moby/moby/issues/23930
+
+	-como usar vfs no docker (driver que funciona para ntfs do windows): 
+	-https://docs.docker.com/storage/storagedriver/vfs-driver/
+
+	-realizar a mudança para o path:
+	-media/gabriel/DATA/programas-U/docker
+	-tutorial seguido: https://linuxconfig.org/how-to-move-docker-s-default-var-lib-docker-to-another-directory-on-ubuntu-debian-linux
 
 imagens do ELK:
 
-elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+	-elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 kibana: https://www.elastic.co/guide/en/kibana/current/docker.html
-logstash: docker pull docker.elastic.co/logstash/logstash:7.0.0 (tentar novamente, pois deu problema na última vez)
+	-logstash: docker pull docker.elastic.co/logstash/logstash:7.0.0 
 

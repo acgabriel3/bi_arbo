@@ -1,0 +1,73 @@
+#CAMINHO
+
+#***
+#Pipeline para projeto leishmaniose ---> Enviando para o elastic.
+
+library(readxl)
+library(elastic)
+
+source("CRISPDM.R")
+source("biblioteca.R")
+
+#***
+#importacao do dado
+
+leish_2010_2017 <- read_excel("dados/leishmaniose/LV2010_2017_NaoNominal.xlsx")
+colnames(leish_2010_2017)[colnames(leish_2010_2017) == "ID_MUNICIP"] <- "ibge"
+completitude_variaveis_de_uma_tabela(leish_2010_2017)
+
+quantidade_para_cada_observacao(leish_2010_2017$ENTRADA)
+quantidade_para_cada_observacao(leish_2010_2017$CS_RACA)
+
+#***
+#refatorar funco para calcular completitude relacionada, com mais de um valor padrao e de maneira correta.
+#conversar com Marcela para verificar se a mesma efetivou uso da funcao, pois poderia gerar analises erradas
+for(i in c("M", "F")) {
+    print(
+      paste(i, 
+      completitude_relacionada(variavel_de_referencia = leish_2010_2017$CS_SEXO, variavel_para_avaliacao = leish_2010_2017$ENTRADA, valoresPadrao = c(i))
+      ,sep = " ")  
+    )
+}
+
+for(i in c("1", "2", "3", "4", "5", "9")) {
+  print(
+    paste(i, 
+          completitude_relacionada(variavel_de_referencia = leish_2010_2017$CS_RACA, variavel_para_avaliacao = leish_2010_2017$ENTRADA, valoresPadrao = c(i))
+          ,sep = " ")  
+  )
+}
+
+#***
+#Pensar a respeito da anaise de consistencia
+
+#***
+#pensar se alguma limpeza sera efetivada antes do envio ao elasticsearch
+
+#***
+#transformacao 
+
+library(dplyr)
+library(stringi)
+library(data.table)
+
+latLon<-fread("dados/demograficos/lat_lon_municipios.csv")
+
+populacaoMuni<-fread("dados/demograficos/populacao_municipios_2010X2017.csv")
+
+colnames(populacaoMuni)<-c("ibge",2010:2017)
+colnames(latLon)[1] <- "ibge"
+
+leish_2010_2017$ibge <- as.character(leish_2010_2017$ibge)
+latLon$ibge <- as.character(latLon$ibge)
+
+populacaoMuni<-populacaoMuni[-1,]
+
+populacaoMuni$ibge<-substring(populacaoMuni$ibge,1,6)
+latLon$ibge <- substring(latLon$ibge,1,6)
+#***
+#talvez incluir o nome do municipio seja necessario para o georeferenciamento
+
+consolidada<-leish_2010_2017 %>%
+                  inner_join(latLon) %>% 
+                  inner_join(populacaoMuni) 
