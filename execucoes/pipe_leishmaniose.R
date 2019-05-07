@@ -38,8 +38,33 @@ for(i in c("1", "2", "3", "4", "5", "9")) {
   )
 }
 
+for(i in c("1", "2", "9")) {
+  print(
+    paste(i, 
+          completitude_relacionada(variavel_de_referencia = leish_2010_2017$HIV, variavel_para_avaliacao = leish_2010_2017$ENTRADA, valoresPadrao = c(i))
+          ,sep = " ")  
+  )
+}
+
+for(i in c("1", "2")) {
+  print(
+    paste(i, 
+          completitude_relacionada(variavel_de_referencia = leish_2010_2017$CRITERIO, variavel_para_avaliacao = leish_2010_2017$ENTRADA, valoresPadrao = c(i))
+          ,sep = " ")  
+  )
+}
+
+for(i in c("1", "2", "3", "4", "5")) {
+  print(
+    paste(i, 
+          completitude_relacionada(variavel_de_referencia = leish_2010_2017$EVOLUCAO, variavel_para_avaliacao = leish_2010_2017$ENTRADA, valoresPadrao = c(i))
+          ,sep = " ")  
+  )
+}
+
+
 #***
-#Pensar a respeito da anaise de consistencia
+#Pensar a respeito da analise de consistencia
 
 #***
 #pensar se alguma limpeza sera efetivada antes do envio ao elasticsearch
@@ -68,6 +93,15 @@ latLon$ibge <- substring(latLon$ibge,1,6)
 #***
 #talvez incluir o nome do municipio seja necessario para o georeferenciamento
 
+idade <- year(strptime(leish_2010_2017$DT_NOTIFIC, format = "%Y-%m-%d"))-
+  year(strptime(leish_2010_2017$DT_NASC, format = "%Y-%m-%d"))
+
+leish_2010_2017 <- extratificacaoIdade(tabela = leish_2010_2017, 
+                                       coluna = idade,
+                                       nomeNovaColuna = "extratificacaoidades")
+
+
 consolidada<-leish_2010_2017 %>%
                   inner_join(latLon) %>% 
                   inner_join(populacaoMuni) 
+

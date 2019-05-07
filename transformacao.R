@@ -27,7 +27,7 @@ municipios_lat_lon <- fread("dados/lat_lon_municipios.csv")
 municipios_lat_lon$codIbge <- substr(municipios_lat_lon$codIbge, 1, 6)
 
 armadilhas2013 <- read_excel("dados/armadilha/2013.xlsx") #Faltara unir todos os anos
-larva_pulpa_2013 <- read.dbf("dados/larva-pulpa/2013.dbf") 
+larva_pulpa_2013 <- read.dbf("dados/SISPNCD/larva-pulpa/2013.dbf") 
 larva_pulpa_2014 <- read.dbf("dados/larva-pulpa/2014.dbf") 
 larva_pulpa_2015 <- read.dbf("dados/larva-pulpa/2015.dbf") 
 larva_pulpa_2016 <- read.xlsx("dados/larva-pulpa/2016.xlsx", sheetIndex = 1) 

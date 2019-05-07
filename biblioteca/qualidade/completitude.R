@@ -53,18 +53,16 @@ completitude_relacionada <- function(variavel_de_referencia, variavel_para_avali
   variavel_de_referencia <- as.character(variavel_de_referencia) #complexidade n
   tabela <- data.frame(variavel_de_referencia, variavel_para_avaliacao) #complexidade n
   
-  linhas <- variavel_de_referencia == .Machine$integer.max #complexidade n
+  posicoes <- NULL
   
-  for(i in 1:length(valoresPadrao)) {
-    
-      linhas <- linhas | (variavel_de_referencia == as.character(valoresPadrao[i])) #complexidade 2n
-    
-  } #complexidade 2nm
-  
-  tabela <- tabela[linhas,] #complexidade n
+  for(i in valoresPadrao) {
+    posicoes <- c(posicoes, which(variavel_de_referencia == valoresPadrao)) #complexidade n
+  }
+
+  tabela <- tabela[posicoes,] #complexidade n
   
   
-  retorno <- completitude(tabela[,2])
+  retorno <- completitude(tabela[[2]])
   
   return(retorno)
-} #complexidade nm(chao de 2nm)
+} #complexidade n

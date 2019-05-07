@@ -22,3 +22,4 @@ calcula_quantidade_fator_peso_variavelFatorPeso <- function(tabela, colunaFator,
   return(resultado)
   
 }
+
