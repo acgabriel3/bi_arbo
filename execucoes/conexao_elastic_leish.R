@@ -10,9 +10,10 @@ library(jsonlite)
 #source(pipeLeishmaniose.R)
 #es_data <- elastic("http://localhost:9200")
 es_produto <- connect(es_host="localhost", es_port = "9200")
-connect()
+conexaoElastic <- connect()
 
-index_delete("leishmaniose")
-index_create("leishmaniose")
+index_delete(conn = conexaoElastic, "leishmaniose")
+index_create(conn = conexaoElastic, "leishmaniose")
 
-docs_bulk(consolidada, index='leishmaniose',type='leish') #Realiza o envio com mapeamento automatico
+docs_bulk(conn = conexaoElastic, consolidada, index='leishmaniose',type='leish') #Realiza o envio com mapeamento automatico
+  
