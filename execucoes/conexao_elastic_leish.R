@@ -15,7 +15,52 @@ conexaoElastic <- connect()
 index_delete(conn = conexaoElastic, "leishmaniose")
 index_create(conn = conexaoElastic, "leishmaniose")
 
+body_armadilhas <- strwrap(
+  '{"mappings": 
+  {"leishmaniose": 
+   { "properties": { 
+      "DT_NOTIFIC" : {"type" : "date", "format": "yyyy-mm-dd"},
+      "SG_UF_NOT"   : {"type" : "keyword"},
+      "ibge" : {"type": "keyword"},
+      "ID_UNIDADE" : {"type": "keyword"},
+      "DT_SIN_PRI" : {"type": "date","format":"yyyy-mm-dd"}, 
+      "DT_NASC" : {"type": "date","format":"yyyy-mm-dd"},
+      "IDADE" : {"type": "integer"}, 
+      "CS_SEXO" : {"type": "text"}, 
+      "CS_GESTANT" : {"type": "text"}, 
+      "CS_RACA" : {"type": "text"}, 
+      "CS_ESCOL_N"  : {"type": "text"},  
+      "UF_RESIDENCIA" : {"type": "keyword"},
+      "MUNICIPIO_RESIDENCIA" : {"type": "keyword"}, 
+      "CS_ZONA" : {"type": "text"},
+      "ID_PAIS"   : {"type": "keyword"},   
+      "DT_INVEST"  : {"type": "date","format":"yyyy-mm-dd"}, 
+      "ID_OCUPA_N"  : {"type": "keyword"}, 
+      "FEBRE" : {"type": "text"},
+      "FRAQUEZA" : {"type": "text"},
+      "EDEMA"   : {"type" : "text"},
+      "EMAGRA" : {"type": "text"},
+      "TOSSE" : {"type": "text"},
+      "PALIDEZ" : {"type": "text"}, 
+      "BACO" : {"type": "text"},
+      "INFECCIOSO" : {"type": "text"}, 
+      "FEN_HEMORR" : {"type": "text"}, 
+      "FIGADO" : {"type": "text"}, 
+      "ICTERICIA" : {"type": "text"}, 
+      "OUTROS"  : {"type": "text"},  
+      "OUTROS_ESP" : {"type": "text"},
+      "HIV" : {"type": "text"}, 
+      "DIAG_PAR_N" : {"type": "text"},
+      "IFI"   : {"type": "text"},   
+      
+      
+    }
+  }
+}')
+
+
 docs_bulk(conn = conexaoElastic, consolidada, index='leishmaniose',type='leish') #Realiza o envio com mapeamento automatico
 
 #***
 #construir mapping de modo que lat e lon sejam referenciados no formato correto, quando da passagem para o elsaticsearch
+
