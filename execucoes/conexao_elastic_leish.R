@@ -16,4 +16,6 @@ index_delete(conn = conexaoElastic, "leishmaniose")
 index_create(conn = conexaoElastic, "leishmaniose")
 
 docs_bulk(conn = conexaoElastic, consolidada, index='leishmaniose',type='leish') #Realiza o envio com mapeamento automatico
-  
+
+#***
+#construir mapping de modo que lat e lon sejam referenciados no formato correto, quando da passagem para o elsaticsearch
