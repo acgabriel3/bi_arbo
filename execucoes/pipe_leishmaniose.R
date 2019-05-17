@@ -106,11 +106,24 @@ idade <- year(strptime(leish_2010_2017$DT_NOTIFIC, format = "%Y-%m-%d"))-
 
 leish_2010_2017 <- extratificacaoIdade(tabela = leish_2010_2017, 
                                        coluna = idade,
-                                       nomeNovaColuna = "extratificacaoidades")
+                                       nomeNovaColuna = "extratificacaoIdades")
 
 
 consolidada<-leish_2010_2017 %>%
                   inner_join(latLon) %>% 
                   inner_join(populacaoMuni) %>%
                   inner_join(municipios)
+
+consolidada["lat_long"] <- paste(consolidada$lat, consolidada$lon, sep = "," )
+
+#*** 
+#passo temporario, depois refinar 
+test <- paste(substring(consolidada$DT_OBITO,7,11), substring(consolidada$DT_OBITO,4,5),substring(consolidada$DT_OBITO,1,2),sep = "-")
+
+test[test=="NA-NA-NA"] <- NA
+consolidada$DT_OBITO <- test
+
+test <- as.factor(consolidada$CS_RACA) 
+levels(test) <- c("BRANCA","PRETA","AMARELA","PARDA","INDIGENA","IGNORADO")
+consolidada$CS_RACA <- test
 
