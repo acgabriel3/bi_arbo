@@ -111,7 +111,6 @@ leish_2010_2017 <- extratificacaoIdade(tabela = leish_2010_2017,
 
 consolidada<-leish_2010_2017 %>%
                   inner_join(latLon) %>% 
-                  inner_join(populacaoMuni) %>%
                   inner_join(municipios)
 
 consolidada["lat_long"] <- paste(consolidada$lat, consolidada$lon, sep = "," )
@@ -127,3 +126,13 @@ test <- as.factor(consolidada$CS_RACA)
 levels(test) <- c("BRANCA","PRETA","AMARELA","PARDA","INDIGENA","IGNORADO")
 consolidada$CS_RACA <- test
 
+
+anos <- year(strptime(leish_2010_2017$DT_NOTIFIC, format = "%Y-%m-%d"))
+
+encontro <- match(consolidada$ibge, populacaoMuni$ibge)
+
+consolidada["populacao"] <- NA
+for (i in 1:length(encontro)) {
+  pos <- substring(anos[i], 4,4)
+  consolidada$populacao[i] <- populacaoMuni[[as.numeric(pos) + 2]][encontro[i]]
+}

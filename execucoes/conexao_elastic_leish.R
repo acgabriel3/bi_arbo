@@ -180,35 +180,14 @@ body <-
         "lon": {
           "type": "float"
         },
-        "pop_2010": {
-          "type": "integer"
-        },
-        "pop_2011": {
-          "type": "integer"
-        },
-        "pop_2012": {
-          "type": "integer"
-        },
-        "pop_2013": {
-          "type": "integer"
-        },
-        "pop_2014": {
-          "type": "integer"
-        },
-        "pop_2015": {
-          "type": "integer"
-        },
-        "pop_2016": {
-          "type": "integer"
-        },
-        "pop_2017": {
-          "type": "integer"
-        },
         "municipio": {
           "type": "text"
         },
         "lat_long": {
           "type": "geo_point"
+        },
+        "populacao: {
+          "type": "integer"
         }
       }
     }
@@ -228,7 +207,8 @@ index_delete(conn = conexaoElastic, "leishmaniose")
 index_create(conn = conexaoElastic, "leishmaniose")
 
 
-
+#***
+#nao esta sendo possivel usar o timeline
 docs_bulk(conn = conexaoElastic, consolidada, index='leishmaniose', type = "leish") #Realiza o envio com mapeamento automatico
 
 mapping <- mapping_get(conn = conexaoElastic, index = "leishmaniose")
