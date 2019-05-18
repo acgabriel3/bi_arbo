@@ -136,3 +136,11 @@ for (i in 1:length(encontro)) {
   pos <- substring(anos[i], 4,4)
   consolidada$populacao[i] <- populacaoMuni[[as.numeric(pos) + 2]][encontro[i]]
 }
+
+source("biblioteca.R")
+
+nova_aux <- quantidade_para_cada_observacao(leish_2010_2017$ibge, valoresPadrao = unique(leish_2010_2017$ibge)) %>% arrange(desc(Freq))
+nova_aux["pop"] = match(nova_aux$observacoes, populacaoMuni$ibge)
+median(nova_aux$Freq)
+## a mediana para a freq esperada tem que ser no minimo o numero de anos, ou seja, 8. e foi obtido 3. Portanto
+# o dado nao possui cobertura para calcular o indice composto de trienio.
