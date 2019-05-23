@@ -45,8 +45,8 @@ for(i in 1:length(sinam_dados_a)) {
 #PERGUNTAS
 #-O que eh possivel construir de visualizacoes acerca destes dados
   #Eh possivel fazer observacoes por ciclo (mas qual o padrao deste dado)
-  #Parecem haverem quantidades de consumo, as mesmas tambem poderiam ser utilizadas para construir observacoes
-  #Parecem haverem localizacoes, talvez seja possivel obter visualizacoes acima dos padroes presentes para localizacoes 
+  #Parecem haver quantidades de consumo, as mesmas tambem poderiam ser utilizadas para construir observacoes
+  #Parecem haver localizacoes, talvez seja possivel obter visualizacoes acima dos padroes presentes para localizacoes 
   #Existem dados temporais que poderiam ser utilizados para construir evolucoes historicas
   #O mesmo para municipios
   #Hah a possibilidade de visualizar tambem dados de localizacao presentes, mas devera haver um entendimento mais profundo sobre o dado 

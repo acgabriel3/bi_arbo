@@ -12,13 +12,15 @@ leitura_automatica_por_tipo_arquivo <- function(diretorioAlvo = NULL, formatoArq
   
   diretorioAtual <- getwd()
   
+  dadosDiretorio <- NULL
+  
   if(is.null(diretorioAlvo)) {
     
     dadosDiretorio <- list.files()
     
   } else {
     
-    setwd(paste(diretorioAtual, diretorioAlvo, sep = ""))
+    setwd(diretorioAlvo)
     dadosDiretorio <- list.files()
     
   }

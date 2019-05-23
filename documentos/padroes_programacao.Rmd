@@ -253,7 +253,11 @@ obs: O último diretório raíz presente em uma hierarquia guarda todas as funç
 
 obs: Deve ser realizado um estudo bibliográfico para conhecer maneiras de criar interfaces na linguagem R.
 
-## 4. PadRões de programação para o Shiny 
+## 3.4 Funcao para integracao de interface (novo paradigma)
+
+Criar função que cria uma DFS, de tal forma: A partir do script interface caule, a função guarda o diretório de trabalho atual. Em seguida, seta o diretório caule como diretório de trabalho, lê o nome de todos os arquivos presentes, seleciona os com terminação .R. Então cada um destes arquivos é executado. Depois disso, a função seta o diretório de trabalh guardado no início como o diretório atual novamente. 
+
+## 4. Padrões de programação para o Shiny 
 Todo aplicativo shiny deverá funcionar por meio de um script do tipo app.R, o qual irá integrar por meio da função NS, todas as ui.R e server.R.
 
 ## 4.1 Divisão por meio da função NS

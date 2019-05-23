@@ -1,2 +1,3 @@
 
+print(getwd())
 interface("transformacoes")
