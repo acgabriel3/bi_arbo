@@ -44,7 +44,7 @@ cria_data_padrao_fator_peso <- function(coluna, posAno = NULL, posFator = NULL, 
   
   eval(parse(text = 
                
-               tipoFator%%"(dataEpidemiologica) <-"%% tipoFator%%"(dataEpidemiologica)" %%"+ fator"
+               tipoFator%%"(dataEpidemiologica) <-"%% tipoFator%%"(dataEpidemiologica)" %%"+ fator - 1"
              
   )
   )
