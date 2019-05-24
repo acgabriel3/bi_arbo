@@ -1,3 +1,0 @@
-
-print(getwd())
-interface("transformacoes")
