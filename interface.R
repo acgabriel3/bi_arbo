@@ -60,25 +60,35 @@ interface <- function(nomeInterface = NULL) {
   
   scripts <- retorna_interfaces_funcoes(arquivos)
   
-  for(i in nrow(scripts)) {
+  print("1")
+  print(scripts)
+  
+  for(i in 1:nrow(scripts)) {
     
     diretorio_base_ou_raiz <- getwd()
     
+    print("script")
+    print(scripts$arquivos[i])
+    print(nrow(scripts))
+    
     if(scripts$ehInterface[i] == FALSE) {
       
+      print("2")
       print(diretorioCaule)
+      print(diretorio_base_ou_raiz)
       
       setwd(diretorioCaule)
       
-      source(paste(diretorio_base_ou_raiz, "/", scripts$arquivos[i], sep = ""))
+      source(paste(diretorio_base_ou_raiz, "/", scripts$arquivos[i], sep = ""), local = globalenv())
       
       setwd(diretorio_base_ou_raiz)
       
     } else {
       
+      print("3")
       print(scripts$arquivos[i])
       
-      source(scripts$arquivos[i])
+      source(scripts$arquivos[i], local = globalenv())
       
     }
     
