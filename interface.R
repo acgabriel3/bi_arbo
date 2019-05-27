@@ -39,7 +39,7 @@ retorna_interfaces_funcoes <- function(arquivos) {
 }
 
 
-interface <- function(nomeInterface = NULL) {
+interface <- function(nomeInterface = NULL, caule = FALSE) {
   
   #***
   #Pesquisar acerca do tratamento padrao de erros no R e implementar 
@@ -52,7 +52,9 @@ interface <- function(nomeInterface = NULL) {
   }
   
   
-  diretorioCaule <- getwd()
+  if (caule) {
+    diretorioCaule <<- getwd()
+  }
   
   setwd(nomeInterface)
   
@@ -69,6 +71,7 @@ interface <- function(nomeInterface = NULL) {
     
     print("script")
     print(scripts$arquivos[i])
+    print("linhas script")
     print(nrow(scripts))
     
     if(scripts$ehInterface[i] == FALSE) {
@@ -81,7 +84,11 @@ interface <- function(nomeInterface = NULL) {
       
       source(paste(diretorio_base_ou_raiz, "/", scripts$arquivos[i], sep = ""), local = globalenv())
       
+      
       setwd(diretorio_base_ou_raiz)
+      if(i == nrow(scripts)) {
+        setwd("..")
+      }
       
     } else {
       
@@ -94,6 +101,6 @@ interface <- function(nomeInterface = NULL) {
     
   }
   
-  setwd(diretorioCaule)
+  #setwd(diretorioCaule)
   
 }
