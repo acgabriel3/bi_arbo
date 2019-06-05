@@ -18,6 +18,7 @@ library(data.table)
 library(lubridate)
 source("CRISPDM.R")
 
+consolidada_resumo_semanal <- fread("dados/SISPNCD/resumoSemanal/consolidado/semanal.csv")
 
 consolidada_resumo_semanal$SEM_EPID <- cria_data_padrao_fator_peso(consolidada_resumo_semanal$SEM_EPID, posAno = c(1,4), posFator = c(5,6), tipoFator = "day")
 consolidada_resumo_semanal$COMPET <- cria_data_padrao_fator_peso(consolidada_resumo_semanal$COMPET, posAno = c(1,4), posFator = c(5,6), tipoFator = "month")
@@ -54,8 +55,16 @@ for(i in ordenaEntomologiocos) {
 } #Estah eh uma funcao util para estah tarefa
 
 
-resumo_semanal_entomologia <- consolidada_resumo_semanal[ordenaEntomologiocos]
-resumo_semanal_operacionais <- consolidada_resumo_semanal[ordenaOperacionais]
+resumo_semanal_entomologia <- consolidada_resumo_semanal[,..ordenaEntomologiocos]
+resumo_semanal_entomologia$ID_LOC <- as.character(resumo_semanal_entomologia$ID_LOC)
+
+resumo_semanal_entomologia$fonte <- rep("sispncd/Resumo semanal", nrow(resumo_semanal_entomologia))
+colnames(resumo_semanal_entomologia)[2] <- "data_sem_epd"
+colnames(resumo_semanal_entomologia)[3] <- "data_mes_epd"
+
+
+resumo_semanal_operacionais <- consolidada_resumo_semanal[,..ordenaOperacionais]
+
 
 fwrite(resumo_semanal_entomologia, "dados/SISPNCD/resumoSemanal/consolidado/entomologia.csv")
 fwrite(resumo_semanal_operacionais, "dados/SISPNCD/resumoSemanal/consolidado/operacionais.csv")

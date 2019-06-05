@@ -12,7 +12,7 @@ verificaNas <- function(tabela){
     print(paste("Quantidade Nas coluna : ", colnames(tabela)[i], " " ,sep = ""))
     
     nomeVariavel <- colnames(tabela)[i]
-    nas <- sum(is.na(tabela[i]), na.rm = TRUE)
+    nas <- sum(is.na(tabela[[i]]), na.rm = TRUE)
     
     resultado <- 
       
