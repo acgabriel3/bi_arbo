@@ -49,7 +49,7 @@ cria_data_padrao_fator_peso <- function(coluna, posAno = NULL, posFator = NULL, 
   )
   )
   
-  dataEpidemiologica <- paste(dataEpidemiologica, "23:59:59", sep = " ")
+  dataEpidemiologica <- paste(dataEpidemiologica, "23:59:59", sep = "T")
   
   return(dataEpidemiologica)
   

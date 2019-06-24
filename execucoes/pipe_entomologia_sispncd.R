@@ -1,4 +1,5 @@
 
+library(elastic)
 
 #***
 #Script para geracao de tabela final entomologia para dengue por meio dos dados do SISPNCD 
@@ -60,3 +61,6 @@ vigilancia_ent_final <- formata_tabela_basica_formato_final(ordemFinal = colname
 
 
 tabela_final_entomologia <- rbind(resumo_semanal_final, vigilancia_entomo_final, vigilancia_ent_final)
+
+
+

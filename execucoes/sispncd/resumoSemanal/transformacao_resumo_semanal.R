@@ -49,11 +49,6 @@ enxuv <- "ENXUV_XX"
 ordenaOperacionais <- c("fonte", "SEM_EPID", "COMPET", "CICLO", "ID_LOC", "ID_DES", "CP", "CONTROLE",  "ID_LARV1", "LARV1_CONS", "ID_LARV2", "LARV2_CONS",
                         "ID_ADULT", "ADULT_CONS", "AGENT_TRAB", "ACS")
 
-for(i in ordenaEntomologiocos) {
-  print(i)
-  consolidada_resumo_semanal[i]
-} #Estah eh uma funcao util para estah tarefa
-
 
 resumo_semanal_entomologia <- consolidada_resumo_semanal[,..ordenaEntomologiocos]
 resumo_semanal_entomologia$ID_LOC <- as.character(resumo_semanal_entomologia$ID_LOC)
@@ -64,7 +59,3 @@ colnames(resumo_semanal_entomologia)[3] <- "data_mes_epd"
 
 
 resumo_semanal_operacionais <- consolidada_resumo_semanal[,..ordenaOperacionais]
-
-
-fwrite(resumo_semanal_entomologia, "dados/SISPNCD/resumoSemanal/consolidado/entomologia.csv")
-fwrite(resumo_semanal_operacionais, "dados/SISPNCD/resumoSemanal/consolidado/operacionais.csv")
