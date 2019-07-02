@@ -44,7 +44,7 @@ vigilanciaEnt_$NU_ANO <- ano
 #criando data para semana epidemiologica e para semana mes aonde for possivel 
 
 aux <- cria_data_padrao_fator_peso(coluna = paste(vigilanciaEntomo$NU_ANO, str_pad(vigilanciaEntomo$NU_SEMAN, 2, pad ="0"), sep = ""),
-                                  posAno = c(1,4), posFator = c(5,6), tipoFator = "day")
+                                  posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
 
 vigilanciaEntomo$data_sem_epd <- aux
 

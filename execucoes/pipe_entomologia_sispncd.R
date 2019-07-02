@@ -32,6 +32,8 @@ entomologia <- data.frame(
 )
 
 
+#***
+#Registrar essa funcao na interface CRISPDM o mais rapido possivel
 formata_tabela_basica_formato_final <- function(ordemFinal, tabela, mapeamento_de_tipos) {
   
   colunasTabela <- colnames(tabela)

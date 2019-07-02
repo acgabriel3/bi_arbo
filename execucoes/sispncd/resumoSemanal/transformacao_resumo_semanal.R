@@ -20,7 +20,7 @@ source("CRISPDM.R")
 
 consolidada_resumo_semanal <- fread("dados/SISPNCD/resumoSemanal/consolidado/semanal.csv")
 
-consolidada_resumo_semanal$SEM_EPID <- cria_data_padrao_fator_peso(consolidada_resumo_semanal$SEM_EPID, posAno = c(1,4), posFator = c(5,6), tipoFator = "day")
+consolidada_resumo_semanal$SEM_EPID <- cria_data_padrao_fator_peso(consolidada_resumo_semanal$SEM_EPID, posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
 consolidada_resumo_semanal$COMPET <- cria_data_padrao_fator_peso(consolidada_resumo_semanal$COMPET, posAno = c(1,4), posFator = c(5,6), tipoFator = "month")
 
 consolidada_resumo_semanal$fonte <- NA
