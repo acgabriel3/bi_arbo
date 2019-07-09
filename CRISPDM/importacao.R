@@ -10,5 +10,7 @@
 
 #Quais bancos de dados preciso ter acesso?
 
-source("CRISPDM/importacao/deszipaTabelas.R")
-source("CRISPDM/importacao/leitura_automatica_por_tipo_arquivo.R")
+interface("importacao")
+
+# source("CRISPDM/importacao/deszipaTabelas.R")
+# source("CRISPDM/importacao/leitura_automatica_por_tipo_arquivo.R")
