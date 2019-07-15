@@ -1,0 +1,98 @@
+---
+title: Uso da tecnologia timelion para geração de indicadores por meio de tabelas
+  unificadas
+author: "Gabriel Alves Castro"
+date: "July 11, 2019"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tópicos
+
+Introdução: Explicação do contexto da tecnologia timelion, do SVDados e formato de tabela única e expectativas
+
+Problema: Explicação do problema do formato de dados de tabela única e da validação no timelion
+
+Dados: Explicação dos dados de teste montados: Distribuição normal, tipos de dados, ideia para indicadores
+
+Testes no timelion: Explicação dos testes realizados no timelion (as visualizações construídas e dashboards)
+
+Adeno específico: Necessário explicar o problema dos buckets temporais, e os testes realizados. Por exemplo:
+
+-As agregações foram auditadas no R, e estão corretas para as subpartes testadas, sendo muito provável que esteja totalmente correta. Os dados no R estão completos.
+
+-Os dados foram todos enviados corretamente ao elasticsearch, e isso foi testado por meio de aggregations temporais em subpartes dos dados.
+
+-Descobri que, ao realizar as aggregations, quando o dado é de um período maior que o do período escolhido, haverá discrepância nas visualizações devido à distribuição entre os buckets.
+
+-Para os dados semanais em específico, há uma determinada discrepância nas viradas de ano: O timelion parece não recomeçar a contagem de semanas quando um novo ano se inicia, e por esse motivo, soma duas vezes a coluna marcadora.
+
+-A hipótese é justamente esta: O timelion não recomeça a contagem semanal a cada ano, mas o tidyverse do R sim. Esta característica do timelion poderia ser inclusive um problema para a visualização das semanas epidemiológicas.
+
+-O funcionamento das dashboards foi testado, é uma grande ambiguidade: Pode-se trabalhar com diversos index's, e visualizações esperando filtros. No entanto é possível encontrar incoerências quando da construção ou não de visualizações
+generalistas (que esperam filtros).
+
+-Quando nessa estrutura de dados, as agregações tornam-se difíceis no timeliom (necessário pesquisar como realizar este processo, as condicionais por exemplo, podem ajudar)
+
+## Introdução 
+
+No contexto da saúde, na grande maioria dos casos, a precaução é idealmente melhor e mais satisfatória que a remediação. Deste modo, as tecnologias de inteligência tornam-se ferramentas cruciais para a manutenção da saúde coletiva da sociedade por serem importantes ferramentas de precaução e tomada de decisão. Os indicadores entomológicos e epidemiológicos são ferramentas importantes para realizar o acompanhamento do relacionamento das arboviroses com as populações humanas. Nesse sentido, é possível realizar o acompanhamento em tempo real dos acontecimentos interessantes à vigilância, por meio de infraestruturas como o ELK (elasticserch, logstash e kibana) e tecnologias como o timelion. Para isso, é necessário o domínio de uma estrutura de dados satisfatória para que se possa gerar e aproveitar dados em tempo real. Neste relatório, com o objetivo de validar uma estrutura de dados proposta para utilização no elasticsearch, e de validar a tecnologia timelion (um plug-in do kibana) como uma opção viável para a exibição de indicadores, será criada passo a passo uma massa de dados para testes, no formato proposto, e será utilizado o timelion para construir validações e visualizações pertinentes.
+
+## A estrutura de dados de uma tabela única
+
+<!-- Criar uma explicação melhor para o que seria uma tabela única, e não partir diretamente para o exemplo da tabela única mais simples. Ou pode-se explicar o formato das linhas no próprio exemplo -->
+Para a rápida visualização de dados, e geração de indicadores em tempo real, é importante que os dados sejam consolidados/gerados em um formato que permita o rápido acesso e a rápida realização de cálculos e pesquisas. Soluções tradicionais, como bancos de dados relacionais, não são soluções viáveis para a visualização em tempo real de dados em larga escala. O SGBD (sistema gerenciador de banco de dados) elasticsearch, foi pensado desde o seu princípios como um SGBD capaz de fornecer a possibilidade de buscas e cálculos rápidos. Neste sentido, a utilização do formato de tabelas únicas (uma só tabela para um banco de dados inteiro) é de extrema utilidade, pois permite a realização de buscas rápidas e cálculos rápidos. No entanto, tais tabelas podem acometer-se de graves problemas, como o grande espaço de armazenamento que exigem, ou incoerências relativas às informações registradas. Uma das tabelas de concepção mais simples, seria uma tabela em que os seus detalhamentos: Temporal (se o dado refere-se à um dia), espacial (se o dado refere-se à um Estado ou um Município) entre outros, e as colunas que indicam o dado referente (população, indicadores, entre outros) possuem cada um uma coluna. 
+
+Neste caso mais simples, se você possui uma tabela dentro de um banco de dados que possui uma coluna com o Estado e uma coluna com a sua respectiva população, na tabela final você manterá essas mesmas colunas, preenchendo com valores vazios as linhas que não contiverem essas informaçoes. Ainda assim, a união de todas as tabelas de um mesmo domínio (universo sobre o qual os dados possuem informações), possui diversas complicações, que também dependem da maneira com a qual o dado será estruturado. Ao preencher níveis de detalhamento que não são o maior possível para um determinado dado (se você possui um dado de um dia, você também possui a informação de a qual ano e mês este dado pertence), ao realizar agregações no nível menos detalhado, poderá-se chegar a problemas, pois somar-se-á dados que não possuem o mesmo significado (dados referentes à quantitativos de dias com dados referentes à quantitativos de anos, por exemplo). Esta situação pode ocorrer facilmente, pois geralmente as tabelas presentes em diversos bancos de dados, possuem informações referentes à diferentes níveis de detalhamento, apesar de o dado referir-se à apenas um. Por exemplo: Um dado que foi coletado em uma semana epidemiológica, também possui uma coluna que indica o mês epidemiológico, o ano, e a década. Ao colocar esta tabela, em conjunto com outra tabela que possui dados referentes à um mês epidemiológico, em uma só tabela, pode chegar-se a graves problemas de consistência dos dados. Esse problema, possui solução de difícil automatização, e neste relatório, irá ser abordada somente uma solução referente à estrutura com a qual as tabelas devem ser unificadas.  
+
+<!-- Dar um exemplo melhor acerca das agregações com níveis de detahamento totalmente preenchidos -->
+
+Ainda neste contexto, outro problema identificado, é referente a unificação de tabelas que possuem colunas totalmente distintas, mas que também possuem seus dados referentes à um mesmo nível de detalhamento: Por exemplo, dados referentes à semanas epidemiológicas. Neste contexto, uma solução correta mas não ótima, seria apenas acrescentar as colunas inexistentes de uma tabela na outra (e vise-versa), e unir-las por meio de uma junção de linhas (pois ambas teriam as mesmas colunas). No entanto, esta solução gasta exponencialmente muito espaço. Acontece que, se os dados são referentes à um mesmo dia, haverão linhas que poderiam ser unificadas em uma só linha, diminuindo o tamanho final da tabela única. Este processo é popularmente conhecido como um "join". No entanto, não é sempre que é consistente ou possível a realização de joins nas tabelas que virão a ser unificadas. 
+
+<!-- Dar um exemplo acerca de linhas que poderiam vir a ser unificadas -->
+<!-- A utilizacao da nova funcao criada seria suficiente para tal exemplo -->
+
+## A validação das visualizações no timelion e os problemas encontrados
+
+A tecnologia do timelion possui algumas dificuldades para a validação dos gráficos que apresenta, referentes à sua corretude. Como estamos tratando do reuso de software, a equipe não detém o conhecimento acerca do funcionamento técnico da ferramenta, o que precisa ser colocado em validação. Existem diversos caminhos para tal, como a engenharia reversa, pois é uma aplicação de código aberto, ou a criação de medidas de validação das visualizações geradas por meio da comparação com outras tecnologias ou elucidações necessárias. Neste contexto, a população de dados no elasticsearch precisa ser também validada, para certificar-se que os dados se encontram consistentes. 
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

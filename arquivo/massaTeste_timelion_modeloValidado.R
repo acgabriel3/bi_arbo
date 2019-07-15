@@ -2,6 +2,7 @@ library(dplyr)
 library(data.table)
 library(lubridate)
 library(elastic)
+library(EnvStats)
 
 source("CRISPDM.R")
 
@@ -60,25 +61,35 @@ ufs <- c("DF", "AC", "RJ", "SP")
 
 pluviosidade <- NULL
 
+distribuicoesNormais <- NULL 
+
 #criado um data frame (df) para cada ano, com dados aleatorio de pluviosidade, ao mesmo tempo estes data frames sao unificados em um soh denomiado "pluviosidade"
 for(estado in ufs) {
   
+  #Define medias e desvios padroes para a pluviosidade e evaporacao de cada estado
+  meanPluv <- round(runif(1, 1, 4))
+  sdPluv <- round(runif(1, 1, 4))  
+  
+  meanEvap <- round(runif(1, 1, 4))
+  sdEvap <- round(runif(1, 1, 4))
+  
+  distribuicoesNormais <- rbind(distribuicoesNormais, data.frame(estado = estado, meanPluv = meanPluv, sdPluv = sdPluv, meanEvap = meanEvap, sdEvap = sdEvap))
+  
   for(i in 1:length(anos)) {
   
-    valor <- rep(0, 365)
+    #constroi vetores d epluviosidade e evaporacao seguindo a distribuicao normal com os parametro de cada estado para cada ano
+    valorPluv <- rnormTrunc(365, mean = meanPluv, sd = sdPluv, min = 0, max = 60)
     
-    #Cria 180 valores aleatorios, entre 1 e 365 (ou seja, serao preenchidas 180 ou menos linhas aleatoriamente), cada linha recebe um valor aleatorio entre 1 e 45 (180 valores)
-    #pode haver sobreposicao de valores (dois valores aleatorios irem para a mesma linha, o valor que vai ficar eh o de posicao maior no vetor)
-    valor[round(runif(180, 1, 365))] <- round(runif(180, 1, 45))
+    valorEvap <- rnormTrunc(365, mean = meanEvap, sd = sdEvap, min = 0, max = 60)
     
-    #Criado um data frame para cada ano com respectivos dados aleatorios de pluviosidade
+    #Criado um data frame para cada ano com res pectivos dados aleatorios de pluviosidade e evaporacao
     eval(parse(text = 
                  
-                 "df_" %% anos[i] %% "_" %% estado %%  "<- data.frame(data = coluna_data_" %% anos[i] %% ",pluviosidade = valor, UF = rep(estado, 365))
+                 "df_aux <- data.frame(data = coluna_data_" %% anos[i] %% ",pluviosidade = valorPluv, evaporacao = valorEvap, UF = rep(estado, 365))
                
-                  pluviosidade <-"  %% "rbind( pluviosidade, "%% "df_" %% anos[i] %% "_" %% estado %% ") 
+                 pluviosidade <-"  %% "rbind( pluviosidade, "%% "df_aux" %%  ") 
                
-                  rm(df_" %% anos[i] %% "_" %% estado %% ")"
+                 rm(df_aux" %% ")"
                  
                  ))
 
@@ -87,71 +98,41 @@ for(estado in ufs) {
 }
 
 
-
-#***
-#Deve ser criada outra variavel pluviometrica, pesquisar acerca disso. 
-#obs: Tambem foi pedido que os dados reais fossem utilizados para validar o modelo, entao a tarefa eh colocar os dados no modelo correto
-pluviosidade$ImoveisPositivos <- round(pluviosidade$pluviosidade * 0.04) +   round(runif(nrow(pluviosidade), 0, 3))
-
-
 #***
 #como realizar as agregacoes por ano? Segue o exemplo abaixo
 
 #A funcao setDT cria um data frame a partir das colunas, agregando os valores por determinada caracteristica (fator) nas colunas escolhidas. O funcionamento eh semelhante ao group_by do dplyr ou do SQL comum
 #Abaixo a pluviosidade eh agregada por soma, para semana, mes e ano. 
-dfSemana <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), ImoveisPositivos = sum(ImoveisPositivos)), by = .(yr = year(data), fator = week(data), UF = UF)]
-dfMes <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), ImoveisPositivos = sum(ImoveisPositivos)), by = .(yr = year(data), fator = month(data), UF = UF)]
-dfAno <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), ImoveisPositivos = sum(ImoveisPositivos)), by = .(yr = year(data), UF = UF)]
+dfSemana <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = week(data), UF = UF)]
+dfMes <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = month(data), UF = UF)]
+dfAno <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), UF = UF)]
 
 #Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH-MM-SS, por meio da funcao do pacote CRISPDM. As colunas sao reordenadas para o padrao definido no SVDados
 dfSemana$dataSemanal <- paste(dfSemana$yr, dfSemana$fator, sep = "")
 dfSemana$dataSemanal <- cria_data_padrao_fator_peso(dfSemana$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
-dfSemana <- dfSemana[,c("dataSemanal", "UF", "pluviosidade", "ImoveisPositivos")]
+dfSemana <- dfSemana[,c("dataSemanal", "UF", "pluviosidade", "evaporacao")]
 
 dfMes$dataMensal <- paste(dfMes$yr, dfMes$fator, sep = "")
 dfMes$dataMensal <- cria_data_padrao_fator_peso(dfMes$dataMensal, posAno = c(1,4), posFator = c(5,6), tipoFator = "month")
-dfMes <- dfMes[,c("dataMensal", "UF", "pluviosidade", "ImoveisPositivos")]
+dfMes <- dfMes[,c("dataMensal", "UF", "pluviosidade", "evaporacao")]
 
 dfAno$dataAnual <- paste(dfAno$yr, "-12-31T23:59:59", sep = "")
-dfAno <- dfAno[,c("dataAnual", "UF", "pluviosidade", "ImoveisPositivos")]
+dfAno <- dfAno[,c("dataAnual", "UF", "pluviosidade", "evaporacao")]
 
-pluviosidade <- pluviosidade[,c("data", "UF", "pluviosidade", "ImoveisPositivos")]
-colnames(pluviosidade) <- c("dataDiaria", "UF", "pluviosidade", "ImoveisPositivos")
+pluviosidade <- pluviosidade[,c("data", "UF", "pluviosidade", "evaporacao")]
+colnames(pluviosidade) <- c("dataDiaria", "UF", "pluviosidade", "evaporacao")
 pluviosidade$dataDiaria <- paste(pluviosidade$dataDiaria, "T23:59:59", sep = "")
 
 #Aqui sao mapeados todas as coluna disponiveis, o formato da tabela final definido pelo SVDados eh assim definido, as colunas de data estao sendo separadas, enquanto que as de outras observacoes, permanecem uma soh
 tipos <- c(dataDiaria = "character", dataSemanal = "character", dataMensal = "character", dataAnual = "character", UF = "character", pluviosidade = "numeric",
-           ImoveisPositivos = "numeric")
+           evaporacao = "numeric")
 
 #***
 #Essa parte eh desnecessaria, parece que a funcao eh apenas necessario passar um vetor de caracteres
 pluviosidadeFinal <- data.frame(dataDiaria = NA, dataSemanal = NA, dataMensal = NA, dataAnual = NA, UF = NA, 
-                                pluviosidade = NA, ImoveisPositivos = NA)
+                                pluviosidade = NA, evaporacao = NA)
 
 
-formata_tabela_basica_formato_final <- function(ordemFinal, tabela, mapeamento_de_tipos) {
-  
-  colunasTabela <- colnames(tabela)
-  
-  encontro <- match(colunasTabela, ordemFinal)
-  
-  colunas_nao_pertencentes <- ordemFinal[-encontro[!is.na(encontro)]]
-  
-  for(coluna in colunas_nao_pertencentes) {
-    
-    print(coluna)
-    print(mapeamento_de_tipos[coluna])
-    
-    tabela[,coluna] <- as(rep(NA, nrow(tabela)), mapeamento_de_tipos[coluna])
-    
-  }
-  
-  tabela <- tabela[,..ordemFinal] #Isto esta dando conflito entre os scripts no windows e no linux, verificar e pesquisar o motivo e pesquisar uma solucao que funcione em ambas as maquinas
-  
-  return(tabela)
-  
-  
-}
 
 #A todas as tabelas sao adicionadas as colunas que nao possuem, de modo que fiquem no formato padrao da tabela final, para que sejam posteriormente unificadas em uma tabela soh
 pluviosidade <- formata_tabela_basica_formato_final(ordemFinal = colnames(pluviosidadeFinal), tabela = pluviosidade, mapeamento_de_tipos = tipos)
@@ -179,3 +160,7 @@ index_create(conn = conexao, index = "massapluviosidade")
 
 
 docs_bulk(conexao, pluviosidadeFinal,index = "massapluviosidade", type = "massapluviosidade")
+
+#Registra as medias e variancia que foram utilizadas para as distribuicoes normais que foram enviadas ao elasticsearch para cada Estado
+library(data.table)
+fwrite(distribuicoesNormais, "arquivo/distribuicoesNormais.csv")
