@@ -2,6 +2,7 @@
 #CAMINHO
 #CRISPDM/Simulacao/popula_variavel_detalhe_dias.R
 
+library(EnvStats)
 
 popula_variavel_detalhe_dias <- function(fatoresDetalhe, intervaloMedia, intervaloSd, nomeFator, intervaloTruncado, anos, nomeVariavel) {
   
@@ -35,9 +36,9 @@ popula_variavel_detalhe_dias <- function(fatoresDetalhe, intervaloMedia, interva
                    
                    "df_aux <- data.frame(data = coluna_data_" %% anos[i] %% "," %% nomeFator %% "= rep(fator, 365)," %% nomeVariavel %% " = valor) 
                  
-                   resultado <-"  %% "rbind( resultado, "%% "df_aux" %%  ") 
+                   resultado <-"  %% "rbind( resultado, df_aux" %%  ") 
                  
-                   rm(df_aux" %% ")"
+                   rm(df_aux)"
                  
       ))
       

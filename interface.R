@@ -4,6 +4,9 @@
 
 retorna_interfaces_funcoes <- function(arquivos) {
   
+   if(length(arquivos) == 0) 
+     arquivos <- "vazio"
+  
   ehInterface <- data.frame(arquivos = arquivos, ehInterface = FALSE, ehScript = TRUE)
   
   for(i in 1:length(arquivos)) {
@@ -73,6 +76,11 @@ interface <- function(nomeInterface = NULL, caule = FALSE) {
     print(scripts$arquivos[i])
     print("linhas script")
     print(nrow(scripts))
+    
+    if(nrow(scripts) == 0) {
+      setwd("..")
+      return()
+    }
     
     if(scripts$ehInterface[i] == FALSE) {
       

@@ -83,7 +83,7 @@ pluviosidade <- pluviosidade %>%
 
 
 
-municipios <- c("Guarulhos-SP", "Campinas-SP", "Osasco-SP", "Sorocaba-SP", "Niteroi-RJ", "Petropolis-RJ")
+municipios <- c("GuarulhosSP", "CampinasSP", "OsascoSP", "SorocabaSP", "NiteroiRJ", "PetropolisRJ")
 
 popula_variavel_detalhe_dias(fatoresDetalhe = municipios, 
                              intervaloMedia = c(0.2,0.4), 
@@ -183,11 +183,14 @@ pluviosidadeFinal <- rbind(pluviosidade, dfSemana, dfMes, dfAno, pluviosidadeMun
 
 #Para testar no timelion se as aggregations estao somando apenas no dominio correto temporal, cada dominio recebe um marcador com uma grandeza diferente. Um dos objetivos deste script eh possibilitar esta validacao
 pluviosidadeFinal$colunaMarcadora <- 1
-pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataDiaria)] <- 10^0
-pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataSemanal)] <- 10^2
-pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataMensal)] <- 10^3
-pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataAnual)] <- 10^4
-
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataDiaria) & !is.na(pluviosidadeFinal$municipio)] <- 10^0
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataSemanal) & !is.na(pluviosidadeFinal$municipio)] <- 10^2
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataMensal) & !is.na(pluviosidadeFinal$municipio)] <- 10^3
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataAnual) & !is.na(pluviosidadeFinal$municipio)] <- 10^4
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataDiaria) & !is.na(pluviosidadeFinal$UF)] <- 10^5
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataSemanal) & !is.na(pluviosidadeFinal$UF)] <- 10^6
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataMensal) & !is.na(pluviosidadeFinal$UF)] <- 10^7
+pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataAnual) & !is.na(pluviosidadeFinal$UF)] <- 10^8
 
 #Aqui a conexao com o elasticsearch eh estabelecida, o index no elasticsearch para a massa de teste eh criado, e os dados da tabela final sao enviados ao indice
 TPconexao <- connect(host = "localhost", port = "9200")

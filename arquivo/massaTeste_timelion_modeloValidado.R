@@ -50,7 +50,7 @@ for(i in 1:length(anos)) {
 #nomear colunas com nomes entendiveis
 #Definido local em que chove em aproximadamente 50 % do ano
 
-#Criado vetor com todos os anos disponiveis
+#Atualizado vetor com todos os anos disponiveis
 anos <- c(2013, anos)
 
 #***
@@ -63,7 +63,7 @@ pluviosidade <- NULL
 
 distribuicoesNormais <- NULL 
 
-#criado um data frame (df) para cada ano, com dados aleatorio de pluviosidade, ao mesmo tempo estes data frames sao unificados em um soh denomiado "pluviosidade"
+#criado um data frame (df) para cada ano, com uma distribuição normal truncada para pluviosidade e evaporação em cada ano de cada Estado, ao mesmo tempo estes data frames sao unificados em um soh denomiado "pluviosidade"
 for(estado in ufs) {
   
   #Define medias e desvios padroes para a pluviosidade e evaporacao de cada estado
@@ -82,17 +82,16 @@ for(estado in ufs) {
     
     valorEvap <- rnormTrunc(365, mean = meanEvap, sd = sdEvap, min = 0, max = 60)
     
-    #Criado um data frame para cada ano com res pectivos dados aleatorios de pluviosidade e evaporacao
-    eval(parse(text = 
-                 
-                 "df_aux <- data.frame(data = coluna_data_" %% anos[i] %% ",pluviosidade = valorPluv, evaporacao = valorEvap, UF = rep(estado, 365))
-               
-                 pluviosidade <-"  %% "rbind( pluviosidade, "%% "df_aux" %%  ") 
-               
-                 rm(df_aux" %% ")"
-                 
-                 ))
-
+    #Cria os dados para cada ano, e os junta por meio de uma junção por linhas, para gerar o data frame final "pluviosidade" que contem todos os dados diarios para cada uma das 4 regioes
+    df_aux <- data.frame(data = eval(as.symbol("coluna_data_" %% anos[i])), 
+                         pluviosidade = valorPluv, 
+                         evaporacao = valorEvap,
+                         UF = rep(estado, 365))
+    
+    pluviosidade <- rbind(pluviosidade, df_aux)
+  
+    rm(df_aux)
+  
   }
   
 }
@@ -102,12 +101,13 @@ for(estado in ufs) {
 #como realizar as agregacoes por ano? Segue o exemplo abaixo
 
 #A funcao setDT cria um data frame a partir das colunas, agregando os valores por determinada caracteristica (fator) nas colunas escolhidas. O funcionamento eh semelhante ao group_by do dplyr ou do SQL comum
-#Abaixo a pluviosidade eh agregada por soma, para semana, mes e ano. 
+#Abaixo a pluviosidade e a evaporacao sao agregadas por soma, para semana, mes e ano. 
 dfSemana <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = week(data), UF = UF)]
 dfMes <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = month(data), UF = UF)]
 dfAno <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), UF = UF)]
 
-#Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH-MM-SS, por meio da funcao do pacote CRISPDM. As colunas sao reordenadas para o padrao definido no SVDados
+#Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH:MM:SS, por meio da funcao do pacote CRISPDM. 
+#As colunas sao reordenadas para o padrao definido no SVDados
 dfSemana$dataSemanal <- paste(dfSemana$yr, dfSemana$fator, sep = "")
 dfSemana$dataSemanal <- cria_data_padrao_fator_peso(dfSemana$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
 dfSemana <- dfSemana[,c("dataSemanal", "UF", "pluviosidade", "evaporacao")]

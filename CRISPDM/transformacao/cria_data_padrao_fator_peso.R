@@ -2,12 +2,16 @@
 #CRISPDM/transformacao/cria_data_padrao_fator_peso.R
 
 library(stringi)
+library(lubridate)
 
-#***
-#encaixar funcao abaixo em alguma interface em CRISPDM
 #***
 #Pensar em definir mais de um operador para unir caracteres de modo que aumenta-se a legibilidade (no entanto dificulta a escrita do codigo)
 #pensar a respeito
+
+#-Recebe coluna = coluna de datas especificas com determinado detalhamento, posAno = vetor com dois elementos, o inicio do ano na string coluna e o final da string ano na string coluna,
+#posFator = vetor com dois elementos, o inicio da string do fator (quantos segundos, minutos, horas) e o final da string fator, tipoFator = o nome da função lubridate que lida com o nive de detalhamento especifico (segundo, minutos, dias)
+#-inclui a ultima data do detalhe (a ultima hora do dia) a coluna, calcula cada observacao segundo o fator
+#-Retorna coluna de datas formatada segundo o elasticsearch, podendo ser advinda de uma agregacao de group_by
 cria_data_padrao_fator_peso <- function(coluna, posAno = NULL, posFator = NULL, tipoFator = NULL) {
   
   '%%' <- function(x,y) paste0(x,y)
@@ -36,21 +40,36 @@ cria_data_padrao_fator_peso <- function(coluna, posAno = NULL, posFator = NULL, 
     
   }
   
-  dataEpidemiologica <- paste(ano, "-01-01", sep = "")
+  #***
+  # Concertar posteriormente a padronizacao de acordo com o nivel de detalhamento, o problema de fato eh que nem todo mes possui 31 dias 
   
-  dataEpidemiologica <- as.Date(dataEpidemiologica)
+  # if(tipoFator == "month") {
+  # 
+  #   dataInicial <- paste(ano, "-01-31", sep = "")
+  # 
+  # } else if(tipoFator == "year") {
+  #   
+  #   dataInicial <- paste(ano, "-12-31", sep = "")
+  #   
+  # } else {
+  
+    dataInicial <- paste(ano, "-01-01", sep = "")
+  
+  # }
+  
+  dataInicial <- as.Date(dataInicial)
   
   fator <- as.numeric(fator)
   
   eval(parse(text = 
                
-               tipoFator%%"(dataEpidemiologica) <-"%% tipoFator%%"(dataEpidemiologica)" %%"+ fator - 1"
+               tipoFator%%"(dataInicial) <-"%% tipoFator%%"(dataInicial)" %%"+ fator - 1"
              
   )
   )
   
-  dataEpidemiologica <- paste(dataEpidemiologica, "23:59:59", sep = "T")
+  dataFinal <- paste(dataInicial, "23:59:59", sep = "T")
   
-  return(dataEpidemiologica)
+  return(dataFinal)
   
 } 
