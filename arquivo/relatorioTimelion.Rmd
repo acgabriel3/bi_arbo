@@ -4,9 +4,9 @@ title: Uso da tecnologia timelion para geração de indicadores por meio de tabe
 author: "Gabriel Alves Castro"
 date: "July 11, 2019"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -844,7 +844,7 @@ Pode-se também como opção, gerar o mesmo gráfico no R, mas a análise quanti
 
 ## Construção de dashboards utilzando visualizações do timelion
 
-A cosntrução de dashboards utilizando visualizações do timelion funcionam muito bem. No entanto alguns cuidados devem ser tomados na concepção das visualizações no timelion referentes as querys que serão realizadas. Também é importante possuir uma certa perspicácipa técnicas ao utilizar a dashboard, pois os filtros permitem a aferição de gráficos que podem ser incoerentes ou sem nenhum valor informativo. Desse modo, por exemplo, ao exibir o indicador criado mais acima em uma dashboard, deve-se excluir a query dos comandos do timelion, fazendo com que o gráfico seja gerado com todos os dados disponíveis. Dessa forma, a visualização irá esperar receber um dado já filtrado, pelos filtros da dashboard. Desse modo os comandos para gerar o gráfico do indicador climático ficam assim:
+A construção de dashboards utilizando visualizações do timelion funcionam muito bem. No entanto alguns cuidados devem ser tomados na concepção das visualizações no timelion referentes as querys que serão realizadas. Também é importante possuir uma certa perspicácipa técnicas ao utilizar a dashboard, pois os filtros permitem a aferição de gráficos que podem ser incoerentes ou sem nenhum valor informativo. Desse modo, por exemplo, ao exibir o indicador criado mais acima em uma dashboard, deve-se excluir a query dos comandos do timelion, fazendo com que o gráfico seja gerado com todos os dados disponíveis. Dessa forma, a visualização irá esperar receber um dado já filtrado, pelos filtros da dashboard. Desse modo os comandos para gerar o gráfico do indicador climático ficam assim:
 
     .es(*, index=massapluviosidade*, 
                 timefield=dataDiaria, 
@@ -1128,6 +1128,7 @@ rbind(
     
   )
 
+
 ```
 
 Indicando 4 níveis de detalhamento para tempo e dois níveis de detalhamento para espaço. 
@@ -1154,6 +1155,16 @@ pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataMensal)
 pluviosidadeFinal$colunaMarcadora[!is.na(pluviosidadeFinal$dataAnual) 
                                   & !is.na(pluviosidadeFinal$UF)] <- 10^8
 
+fwrite(rbind(
+    
+    pluviosidadeFinal[which(!is.na(pluviosidadeFinal$dataDiaria) & (pluviosidadeFinal$UF == "AC")),][1],
+    pluviosidadeFinal[which(!is.na(pluviosidadeFinal$dataSemanal) & (pluviosidadeFinal$UF == "AC")),][1],
+    pluviosidadeFinal[which(!is.na(pluviosidadeFinal$dataMensal) & (pluviosidadeFinal$municipio == "GuarulhosSP")),][1],
+    pluviosidadeFinal[which(!is.na(pluviosidadeFinal$dataAnual) & (pluviosidadeFinal$municipio == "GuarulhosSP")),][1]
+    
+  )
+, file = "imagens/exemploTabela.csv")
+
 
 ```
 
@@ -1162,7 +1173,7 @@ Assim semelhante ao que fizemos antes, e esperando a grandeza de 10^1 para o det
     .es(q=municipio:GuarulhosSP, index=massapluespacial*,
           timefield=dataDiaria, metric=sum:colunaMarcadora)
           
-Obtendo assim como o esperado, o seguinte gráfico (o período de intervalo é menor que o requente, pois caso maior excederia a capacidade de pontos que o timelion poderia plotar): 
+Obtendo assim como o esperado, o seguinte gráfico (o período de intervalo é menor que o utilizado anteriormente neste relatório, pois caso maior excederia a capacidade de pontos que o timelion poderia plotar): 
 
 ``` {r, echo = FALSE, out.width="60%"}
 
@@ -1174,6 +1185,7 @@ Obtendo, como esperado, apenas o valor de grandeza para dia e município. O que 
 
 No entanto, podemos fazer algumas observações para as dashboards, que deveriam obrigatoriamente, caso generalistas, ter de possuir filtros para municipio e para UF ao mesmo tempo. Onde não se poderia utilizar os dois filtros ao mesmo tempo, pois não seria exibido nenhum dado (nenhuma observação possui ao mesmo tempo município e UF). Uma segunda opção seria construir as visualizações já com as querys prontas no timelion, e utilizar apenas filtros relativos à outras características na dashboard. No entanto, poderíamos incorrer em outros problemas que ainda não foram previstos nessa análise.
 
+<!-- A conformidade entre as agregações também foram testadas, pensar se devem ser incluídas no relatório. -->
 
 ## Limitações do timelion 
 
@@ -1230,6 +1242,6 @@ Espera-se que os problemas relativos ao detalhamento semanal sejam resolvidos, d
 
 
 
-
+  
 
 

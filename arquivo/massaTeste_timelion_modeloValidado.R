@@ -3,6 +3,7 @@ library(data.table)
 library(lubridate)
 library(elastic)
 library(EnvStats)
+library(ISOweek)
 
 source("CRISPDM.R")
 
@@ -102,14 +103,19 @@ for(estado in ufs) {
 
 #A funcao setDT cria um data frame a partir das colunas, agregando os valores por determinada caracteristica (fator) nas colunas escolhidas. O funcionamento eh semelhante ao group_by do dplyr ou do SQL comum
 #Abaixo a pluviosidade e a evaporacao sao agregadas por soma, para semana, mes e ano. 
-dfSemana <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = week(data), UF = UF)]
+dfSemana <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = substring(date2ISOweek(data), 1, 4), fator = substring(date2ISOweek(data), 7, 8), UF = UF)]
 dfMes <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), fator = month(data), UF = UF)]
 dfAno <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), UF = UF)]
 
 #Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH:MM:SS, por meio da funcao do pacote CRISPDM. 
 #As colunas sao reordenadas para o padrao definido no SVDados
+
+fim_primeiras_semanas <- c("2013" = "2013-01-12", "2014" = "2014-01-04", "2015" = "2015-01-10", "2016" = "2016-01-09", 
+                           "2017" = "2017-01-07", "2018" = "2018-01-06", "2019" = "2019-01-01") 
+
 dfSemana$dataSemanal <- paste(dfSemana$yr, dfSemana$fator, sep = "")
-dfSemana$dataSemanal <- cria_data_padrao_fator_peso(dfSemana$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
+dfSemana$dataSemanal <- cria_data_padrao_fator_peso(dfSemana$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week", 
+                                                    datas_finais_semanas = fim_primeiras_semanas)
 dfSemana <- dfSemana[,c("dataSemanal", "UF", "pluviosidade", "evaporacao")]
 
 dfMes$dataMensal <- paste(dfMes$yr, dfMes$fator, sep = "")

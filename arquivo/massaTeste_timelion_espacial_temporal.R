@@ -140,8 +140,12 @@ df_mes_mun <- setDT(pluviosidadeMun)[, .(pluviosidade = sum(pluviosidade), evapo
 df_ano_mun <- setDT(pluviosidadeMun)[, .(pluviosidade = sum(pluviosidade), evaporacao = sum(evaporacao)), by = .(yr = year(data), municipio = municipio)]
 
 #Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH-MM-SS, por meio da funcao do pacote CRISPDM. As colunas sao reordenadas para o padrao definido no SVDados
+fim_primeiras_semanas <- c("2013" = "2013-01-12", "2014" = "2014-01-04", "2015" = "2015-01-10", "2016" = "2016-01-09", 
+                           "2017" = "2017-01-07", "2018" = "2018-01-06", "2019" = "2019-01-01") 
+
 df_semana_mun$dataSemanal <- paste(df_semana_mun$yr, df_semana_mun$fator, sep = "")
-df_semana_mun$dataSemanal <- cria_data_padrao_fator_peso(df_semana_mun$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week")
+df_semana_mun$dataSemanal <- cria_data_padrao_fator_peso(df_semana_mun$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week",
+                                                         datas_finais_semanas = fim_primeiras_semanas)
 df_semana_mun <- df_semana_mun[,c("dataSemanal", "municipio", "pluviosidade", "evaporacao")]
 
 df_mes_mun$dataMensal <- paste(df_mes_mun$yr, df_mes_mun$fator, sep = "")
