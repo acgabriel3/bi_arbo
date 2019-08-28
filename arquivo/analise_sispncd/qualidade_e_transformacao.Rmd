@@ -1,0 +1,108 @@
+---
+title: "Qualidade e transformação dos dados do SISPNCD"
+author: "Gabriel Alves Castro"
+date: "August 27, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+
+library(dplyr)
+library(foreign)
+
+setwd("../..")
+
+source("CRISPDM.R")
+
+source("biblioteca.R")
+
+nomesTabelas <- leitura_automatica_por_tipo_arquivo(formatoArquivo = ".dbf", funcao_de_leitura = "read.dbf", diretorioAlvo = "dados/SISPNCD/localidades/original")
+
+consolidada_localidades_sispncd <- uneTabelas(nomeTabelas = nomesTabelas, formatoArquivos = "LOC_SVS_", remover = TRUE)
+
+
+```
+
+## Quantidade de preenchimento dos dados de localidade
+
+Quantidade de colunas: 
+
+```{r, echo = FALSE}
+
+print(nrow(consolidada_localidades_sispncd))
+
+```
+
+Quantidade de dados com valor não preenchido por coluna: 
+
+```{r, echo = FALSE}
+
+resultado <- data.frame(NULL)
+
+for(coluna in colnames(consolidada_localidades_sispncd)) {
+
+  aux <- data.frame(coluna = coluna, valoresVazios = sum(is.na(consolidada_localidades_sispncd[[coluna]])))
+  
+  resultado <- rbind(resultado, aux)
+  
+} 
+
+print(resultado)
+
+```
+
+Quantidade de dados com valor igual a zero:
+
+```{r, echo = FALSE}
+
+resultado <- data.frame(NULL)
+
+for(coluna in colnames(consolidada_localidades_sispncd)) {
+
+  aux <- data.frame(coluna = coluna, valoresVazios = sum(consolidada_localidades_sispncd[[coluna]] == 0, na.rm = TRUE))
+  
+  resultado <- rbind(resultado, aux)
+  
+} 
+
+print(resultado)
+
+```
+
+Colunas com preenchimento acima de 30%:
+
+```{r, echo=FALSE}
+
+resultado <- c(NULL)
+
+for(coluna in colnames(consolidada_localidades_sispncd)) {
+  
+  if((as.numeric(completitude(consolidada_localidades_sispncd[[coluna]])) < 70) & (sum(consolidada_localidades_sispncd[[coluna]] == 0, na.rm = TRUE) < 70)) {
+    resultado <- c(resultado, coluna)
+  }
+  
+}
+
+print(resultado)
+
+```
+
+
+Identificando sujeiras nos dados: 
+
+Anos para os quais foram indicados como a data do registro DT_ATUA:
+```{r, echo = FALSE}
+
+library(stringi)
+
+print(unique(substring((consolidada_localidades_sispncd$DT_ATUA), 1, 4)))
+
+```
+
+O exemplo dos dados acima, demonstra uma situação que ocorre na maioria massiva dos bancos de dados existentes: Os dados não são perfeitos ou apresentam exatamente o que prometem. Não é possível utilizar os dados, sem o devido tratamento. Ou simplesmente, pode não ser possível utilizar os dados para o objetivo que prometem.
+
+O problema da sujeira também está no fato de que, um único dado sujo, que esteja com valores muito áquem do esperado, em uma agregação, irão enviezar todos os dados na visualização, ou em uma pesquisa. Uma maneira de encontrar estas incongruências, é por meio de variáveis identificadoras incoerêntes, ou atributos também incoerêntes. Os quais podem indicar toda uma linha incoerente. Por exemplo: Uma coluna de datas, que possua uma data errada (uma data no futuro) pode contar todas as outras linhas erradas também, o que poderá invalidar uma visualização criada com os dados sem nenhum tratamento de dados. 
+
+O segundo fator refere-se ao fato de que, para gerar as visualizações, os dados devem ser transformados para um determinado formato, devem ser unidos segundo suas chaves identificadores, e devem ser agregados segundo os objetivos. Diversas visualizações, simplesmente não podem ser construídas sem o processo de transformação de dados. 
+
+Outro grande problema referente ao nível de preenchimento dos dados, ou mesmo dos dados disponíveis, é a cobertura que a amostra trem sobre a população. A depender da amostra, não é possível utilizar os dados para responder perguntas generalizadas sobre as amostras (perguntas que busquem caracterizar toda a população(universo) pesquisada(o)). 

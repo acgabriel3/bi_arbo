@@ -110,8 +110,8 @@ dfAno <- setDT(pluviosidade)[, .(pluviosidade = sum(pluviosidade), evaporacao = 
 #Aqui os dados de semana, mes e dia sao formatados para o formato elasticsearch definido pelo SVDados yyyy-mm-ddTHH:MM:SS, por meio da funcao do pacote CRISPDM. 
 #As colunas sao reordenadas para o padrao definido no SVDados
 
-fim_primeiras_semanas <- c("2013" = "2013-01-12", "2014" = "2014-01-04", "2015" = "2015-01-10", "2016" = "2016-01-09", 
-                           "2017" = "2017-01-07", "2018" = "2018-01-06", "2019" = "2019-01-01") 
+fim_primeiras_semanas <- c("2013" = "2013-01-13", "2014" = "2014-01-05", "2015" = "2015-01-11", "2016" = "2016-01-10", 
+                           "2017" = "2017-01-08", "2018" = "2018-01-06", "2019" = "2019-01-01") 
 
 dfSemana$dataSemanal <- paste(dfSemana$yr, dfSemana$fator, sep = "")
 dfSemana$dataSemanal <- cria_data_padrao_fator_peso(dfSemana$dataSemanal, posAno = c(1,4), posFator = c(5,6), tipoFator = "week", 
