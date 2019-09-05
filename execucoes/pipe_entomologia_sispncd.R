@@ -1,5 +1,6 @@
 
 library(elastic)
+source("CRISPDM.R")
 
 #***
 #Script para geracao de tabela final entomologia para dengue por meio dos dados do SISPNCD 
@@ -32,32 +33,7 @@ entomologia <- data.frame(
 )
 
 
-#***
-#Registrar essa funcao na interface CRISPDM o mais rapido possivel
-formata_tabela_basica_formato_final <- function(ordemFinal, tabela, mapeamento_de_tipos) {
-  
-  colunasTabela <- colnames(tabela)
-  
-  encontro <- match(colunasTabela, ordemFinal)
-  
-  colunas_nao_pertencentes <- ordemFinal[-encontro[!is.na(encontro)]]
-  
-  for(coluna in colunas_nao_pertencentes) {
-    
-    print(coluna)
-    print(mapeamento_de_tipos[coluna])
-    
-    tabela[,coluna] <- as(rep(NA, nrow(tabela)), mapeamento_de_tipos[coluna])
-    
-  }
-  
-  tabela <- tabela[,..ordemFinal]
-  
-  return(tabela)
-  
-  
-}
-resumo_semanal_final <- formata_tabela_basica_formato_final(ordemFinal =  colnames(entomologia), tabela = resumo_semanal_entomologia, mapeamento_de_tipos = tipos)
+resumo_semanal_final <- formata_tabela_basica_formato_final(ordemFinal =  colnames(entomologia), tabela = zika_03_01_2018, mapeamento_de_tipos = tipos)
 vigilancia_entomo_final <- formata_tabela_basica_formato_final(ordemFinal = colnames(entomologia), tabela = vigilancia_entomo_consolidada, mapeamento_de_tipos = tipos)
 vigilancia_ent_final <- formata_tabela_basica_formato_final(ordemFinal = colnames(entomologia), tabela = vigilancia_ent_consolidada, mapeamento_de_tipos = tipos)
 

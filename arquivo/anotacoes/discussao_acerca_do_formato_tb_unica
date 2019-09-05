@@ -1,0 +1,19 @@
+
+
+
+Excluir, no âmbito espacial a informação dos níveis de menor detalhamento, iria impossibilitar de determinada maneira, a aferição dos dados nestes níveis de detalhamento, diretamente da tabela. Para tempo, as informações de agregações já serão inerentes às ferramentas, e é por isso que este problema não ocorre. No entanto, o pensado é que, se houverem informações consolidadas acerca dos Estados, não há necessidade de agregar os dados no nível municipal, por exemplo.
+
+No entanto, pode ser que não existam dados agregados de determinado nível. O que impossibilitaria a investigação para esse nível, ao navegar pela tabela.  
+
+O problema claro é que, se deixadas na mesma coluna, as informações iriam
+
+Outro problema encontrado é no caso de, se, por exemplo, deseje-se agregar informações de diferentes níveis em um só indicador. Caso não seja possível trabalhar com mais de um index, isto irá dificultar o processo. Ou até mesmo impossibilitar (avaliar) devido ao fato de que ao consultar um dado para um e outro nível de detalhamento o retorno será vazio, pois não haverá interseção entre as linhas.  
+
+
+Qual é a solução para o problema? 
+
+- Uma solução possível é replicar o dado, de modo que exista uma coluna que considera o Estado um atributo. (porém isso dobraria a quantidade de colunas com relação à cada série de um tipo e âmbito determinados)
+
+- Outra solução possível é a criação de uma marca para as colunas que seriam um atributo, e não, de fato o nível de detalhe. (pensar a respeito, o estabelecimento de marcar parece não ser tão direto assim). Porém esta solução parece ser mais complexa.
+
+

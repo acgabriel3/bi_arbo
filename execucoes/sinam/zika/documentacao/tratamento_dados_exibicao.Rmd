@@ -1,0 +1,45 @@
+---
+title: "tratamento dos dados e exibição"
+author: "Gabriel Alves Castro"
+date: "September 3, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1 Integridade e pureza dos dados
+
+<!-- Toda essa etapa não é/foi realizada pela equipe da sala de situação? Onde estão os resultados, perguntar a Marcela -->
+
+
+```{r, echo=FALSE, results='hide'}
+setwd("../../../..")
+source("biblioteca.R")
+source("execucoes/sinam/zika/importacao.R")
+```
+
+# 1.1 Completitude dos dados:
+
+CLASSI_FIN
+```{r}
+
+
+completitude(teste_integracao$CLASSI_FIN)
+
+
+```
+
+
+DT_OBITO
+```{r}
+
+completitude(teste_integracao$DT_OBITO)
+
+```
+
+
+```{r}
+
+```

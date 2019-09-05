@@ -7,6 +7,8 @@
 #-Retorna a tabela formatada para o formato de tabela final
 formata_tabela_basica_formato_final <- function(ordemFinal, tabela, mapeamento_de_tipos) {
   
+  print(ordemFinal)
+  
   colunasTabela <- colnames(tabela)
   
   encontro <- match(colunasTabela, ordemFinal)
@@ -22,7 +24,7 @@ formata_tabela_basica_formato_final <- function(ordemFinal, tabela, mapeamento_d
     
   }
   
-  tabela <- tabela[,..ordemFinal] #Isto esta dando conflito entre os scripts no windows e no linux, verificar e pesquisar o motivo e pesquisar uma solucao que funcione em ambas as maquinas
+  tabela <- tabela[,ordemFinal] #Isto esta dando conflito entre os scripts no windows e no linux, verificar e pesquisar o motivo e pesquisar uma solucao que funcione em ambas as maquinas
   
   return(tabela)
   
