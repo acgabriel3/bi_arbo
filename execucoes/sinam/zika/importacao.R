@@ -9,6 +9,10 @@ library(elastic)
 
 source("CRISPDM.R")
 
+#***
+#Nao amarrar execucoes a bibliotecas externas, pensar nisso
+source("execucoes/demograficos/importacao_e_consolidacao.R")
+
 
 zika_2016 <- read.dbf("dados/sinam/zika/ZIKA 2016.dbf")
 zika_03_01_2018 <- read.dbf("dados/sinam/zika/Zika_03.01.2018.dbf")
@@ -72,12 +76,26 @@ teste_zika_2016 <- formata_tabela_basica_formato_final(ordemFinal = ordemColunas
 teste_zika_2017 <- formata_tabela_basica_formato_final(ordemFinal = ordemColunas, zikaSE17_excel, mapeamento_de_tipos = mapeamento_de_tipos)
 
 
-teste_integracao <- rbind(teste_zika_2016, teste_zika_2017, teste)
+zikaFinal <- rbind(teste_zika_2016, teste_zika_2017, teste)
 
-teste_integracao$DT_NOTIFIC <- paste(teste_integracao$DT_NOTIFIC, "23:59:59", sep = "T")
+zikaFinal$DT_NOTIFIC <- paste(zikaFinal$DT_NOTIFIC, "23:59:59", sep = "T")
+
+colnames(populacoesMunicipios) <- c("ID_MUNICIP", "NU_ANO", "POPULACAO")
+
+# populacoesMunicipios$ID_MUNICIP <- as.character(populacoesMunicipios$ID_MUNICIP)
+# populacoesMunicipios$NU_ANO <- as.character(populacoesMunicipios$NU_ANO)
+# populacoesMunicipios$ID_MUNICIP <- substring(populacoesMunicipios$ID_MUNICIP, 1, 6)
+# 
+# zikaFinal$ID_MUNICIP <- as.character(zikaFinal$ID_MUNICIP)
+# zikaFinal$NU_ANO <- as.character(zikaFinal$NU_ANO)
+# zikaFinal$ID_MUNICIP <- substring(zikaFinal$ID_MUNICIP, 1, 6)
+# 
+# 
+#   
+# zikaFinal <- zikaFinal %>%
+#             inner_join(populacoesMunicipios)
 
 #***
-#Deu certo, avaliar as variaveis e preparar para o envio ao kibana
 #Pesquisar como observar outliers
 # 
 # conn <- connect(es_host="localhost", es_port = "9200")
@@ -88,7 +106,7 @@ teste_integracao$DT_NOTIFIC <- paste(teste_integracao$DT_NOTIFIC, "23:59:59", se
 # 
 # index_create(conn = conn, index = "sinamzika")
 # 
-# docs_bulk(teste_integracao, conn = conn, index = "sinamzika")
-# 
-# 
+# docs_bulk(zikaFinal, conn = conn, index = "sinamzika")
+
+
 

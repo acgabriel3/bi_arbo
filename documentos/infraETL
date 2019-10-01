@@ -14,6 +14,8 @@ Alterando o local aonde o docker guarda arquivos para uma pasta específica em u
 
 	-realizar a mudança para o path:
 	-media/gabriel/DATA/programas-U/docker
+	-Usar:
+	-ExecStart=/usr/bin/dockerd -g /media/gabriel/DATA/programas-U/docker -H fd://
 	-tutorial seguido: https://linuxconfig.org/how-to-move-docker-s-default-var-lib-docker-to-another-directory-on-ubuntu-debian-linux
 
 imagens do ELK:
