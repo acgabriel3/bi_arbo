@@ -4,6 +4,7 @@ library(foreign)
 '%%' <- function(x,y) paste0(x, y) 
 
 dengue2017 <- read.dbf("dados/sinam/dengue/original/2016_2017/DENGUE_2017.dbf")
+dengue2016 <- read.dbf("dados/sinam/dengue/original/2016_fora/DENGUE_2016.dbf")
 dengue2015 <- read.dbf("dados/sinam/dengue/original/2015/DENGUE_2015.dbf")
 dengue2014 <- read.dbf("dados/sinam/dengue/original/2014/DENGUE_2014.dbf")
 dengue2013 <- read.dbf("dados/sinam/dengue/original/2012_2013/DENGUE_2013.dbf")
