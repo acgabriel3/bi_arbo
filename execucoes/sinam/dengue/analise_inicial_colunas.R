@@ -1,25 +1,19 @@
 
-colnames2017 <- colnames(dengue2017)
-colnames2016 <- colnames(dengue2016)
-colnames2015 <- colnames(dengue2015)
-colnames2014 <- colnames(dengue2014)
-colnames2013 <- colnames(dengue2013)
-
-match2015_2016 <- match(colnames2015, colnames2016)
-match2017_2016 <- match(colnames2017, colnames2016)
-match2014_2015 <- match(colnames2014, colnames2015)
-match2013_2015 <- match(colnames2013, colnames2015)
+source("CRISPDM.R")
 
 
-colunas_distintas_2014 <- colnames2014[which(is.na(match2015_2014))]
-colunas_distintas_2013 <- colnames2013[which(is.na(match2013_2015))]
+nomesTabelas <- c("dengue1993", "dengue1994", "dengue1995", "dengue1996", "dengue1997", "dengue1998", "dengue1999", "dengue2000", 
+      "dengue2000", "dengue2001", "dengue2002", "dengue2003", "dengue2004", "dengue2005", "dengue2006", "dengue2007", 
+      "dengue2008", "dengue2009", "dengue2010", "dengue2011", "dengue2012", "dengue2013", "dengue2014", "dengue2015", 
+      "dengue2016", "dengue2017")
 
+tabelasColunas <- cria_hash_nomesTabelas_nomesColunas(nomesTabelas)
 
-#Com esse metodo, seria possivel conseguir realizar o encontro total de todas as variaveis das colunas, disfazendo o processo manual que estava sendo realizado anteriormente
-#A concentracao seria na investigacao dos proprios dados. No entanto, este caso so funcionaria para um mesmo nivel de detalhamento, e para colunas semelhantes
-#As colunas distintas nao dao garantia alguma de serem realmente distintas das outras, podem ter apenas nomes diferentes. Estas, devem ser atacadas, para se 
-#investigar as diferencas
+colunasDistintas <- mostra_colunas_distintas_doMaior_conjunto(tabelasColunas)
 
+distintas_das_distintas_dengue2016 <- mostra_colunas_distintas_doMaior_conjunto(hash_nomesTabelas_nomesColunas = colunasDistintas,
+                                                                                tabelaReferencia = "dengue2006")
 
-#usar append
+#Avaliando as diferencas, percebe-se que eh possivel unificar o banco a partir de provavelmente 2007
 
+uniao <- gera_nomesColunas_unicos(hash_de_nomes = tabelasColunas)

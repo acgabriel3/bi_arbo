@@ -11,7 +11,7 @@ source("CRISPDM.R")
 
 #***
 #Nao amarrar execucoes a bibliotecas externas, pensar nisso
-source("execucoes/demograficos/importacao_e_consolidacao.R")
+# source("execucoes/demograficos/importacao_e_consolidacao.R")
 
 
 zika_2016 <- read.dbf("dados/sinam/zika/ZIKA 2016.dbf")
